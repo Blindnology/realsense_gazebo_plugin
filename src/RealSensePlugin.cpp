@@ -100,6 +100,8 @@ void RealSensePlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
     else if (name == "infrared2OpticalframeName")
       cameraParamsMap_[IRED2_CAMERA_NAME].optical_frame =
           _sdf->GetValue()->GetAsString();
+    else if (name == "hackBaseline")
+      _sdf->GetValue()->Get(hackBaseline_);
     else if (name == "rangeMinDepth")
       _sdf->GetValue()->Get(rangeMinDepth_);
     else if (name == "rangeMaxDepth")

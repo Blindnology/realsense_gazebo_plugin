@@ -5,7 +5,8 @@
 namespace {
 std::string extractCameraName(const std::string &name);
 sensor_msgs::CameraInfo cameraInfo(const sensor_msgs::Image &image,
-                                   float horizontal_fov);
+                                   float horizontal_fov,
+                                   float hack_baseline = 0);
 }
 
 namespace gazebo {
@@ -95,7 +96,8 @@ void GazeboRosRealsense::OnNewFrame(const rendering::CameraPtr cam,
 
   // publish to ROS
   auto camera_info_msg =
-      cameraInfo(this->image_msg_, cameras.at(camera_id)->HFOV().Radian());
+      cameraInfo(this->image_msg_, cameras.at(camera_id)->HFOV().Radian(),
+                 camera_id == IRED2_CAMERA_NAME ? this->hackBaseline_ : 0);
   image_pub->publish(this->image_msg_, camera_info_msg);
 }
 
@@ -247,7 +249,8 @@ std::string extractCameraName(const std::string &name) {
 }
 
 sensor_msgs::CameraInfo cameraInfo(const sensor_msgs::Image &image,
-                                   float horizontal_fov) {
+                                   float horizontal_fov,
+                                   float hack_baseline) {
   sensor_msgs::CameraInfo info_msg;
 
   info_msg.header = image.header;
@@ -264,6 +267,7 @@ sensor_msgs::CameraInfo cameraInfo(const sensor_msgs::Image &image,
   info_msg.K[8] = 1.;
 
   info_msg.P[0] = info_msg.K[0];
+  info_msg.P[3] = -focal * hack_baseline;
   info_msg.P[5] = info_msg.K[4];
   info_msg.P[2] = info_msg.K[2];
   info_msg.P[6] = info_msg.K[5];

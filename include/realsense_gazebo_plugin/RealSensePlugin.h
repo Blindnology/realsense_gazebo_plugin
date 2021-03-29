@@ -132,6 +132,7 @@ protected:
   double infraredUpdateRate_;
   double depthUpdateRate_;
 
+  float hackBaseline_;
   float rangeMinDepth_;
   float rangeMaxDepth_;
 };
